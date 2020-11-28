@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,36 +13,44 @@ namespace McExample.DAL
     public class ProductDAO
     {
         private static List<Product> products;
-        private const string FILE_NAME = @"data/products.json";
+        private const string FILE_NAME = @"products.json";
+        private readonly string dbFolder;
         private FileInfo file;
-        public ProductDAO()
+        public ProductDAO(string dbFolder)
         {
-            file = new FileInfo(FILE_NAME);
+            this.dbFolder = dbFolder;
+            file = new FileInfo(Path.Combine(this.dbFolder, FILE_NAME));
             if (!file.Directory.Exists)
             {
                 file.Directory.Create();
             }
+
             if (!file.Exists)
             {
                 file.Create().Close();
                 file.Refresh();
             }
+
             if (file.Length > 0)
             {
                 using (StreamReader sr = new StreamReader(file.FullName))
                 {
                     string json = sr.ReadToEnd();
                     products = JsonConvert.DeserializeObject<List<Product>>(json);
-                }
-                if(products == null)
-                {
-                    products = new List<Product>();
-                }
-                    
+                }                                  
+            }
+
+            if (products == null)
+            {
+                products = new List<Product>();
             }
         }
+
         public void Add(Product product)
         {
+            var index = products.IndexOf(product);
+            if (index >= 0)
+                throw new DuplicateNameException("This product reference already exists !");
             products.Add(product);
             Save();
         }
@@ -64,6 +73,11 @@ namespace McExample.DAL
         public IEnumerable<Product> Find()
         {
             return new List<Product>(products);
+        }
+
+        public IEnumerable<Product> Find(Func<Product, bool> predicate)
+        {
+            return new List<Product>(products.Where(predicate).ToArray());
         }
     }
 }

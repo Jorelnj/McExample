@@ -11,9 +11,9 @@ namespace McExample.BLL
     public class ProductBLO
     {
         ProductDAO productRepo;         
-        public ProductBLO()
+        public ProductBLO(string dbFolder)
         {
-            productRepo = new ProductDAO();
+            productRepo = new ProductDAO(dbFolder);
         }
         public void CreateProduct(Product product)
         {
@@ -28,6 +28,16 @@ namespace McExample.BLL
         public IEnumerable<Product> GetAllProducts()
         {
             return productRepo.Find();
+        }
+
+        public IEnumerable<Product> GetByReference(string reference)
+        {
+            return productRepo.Find(x=> x.Reference == reference);
+        }
+
+        public IEnumerable<Product> GetBy(Func<Product, bool> predicate)
+        {
+            return productRepo.Find(predicate);
         }
     }
 }

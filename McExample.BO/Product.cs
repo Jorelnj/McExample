@@ -30,7 +30,7 @@ namespace McExample.BO
         public override bool Equals(object obj)
         {
             return obj is Product product &&
-                   Reference == product.Reference;
+                   Reference.Equals(product.Reference, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()

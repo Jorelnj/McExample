@@ -2,6 +2,7 @@
 using McExample.BO;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +10,7 @@ using System.Threading.Tasks;
 namespace McExample.Cons
 {
     class Program
-    {
-        
-
+    {       
         static void Main(string[] args)
         {
             string choice = "y";
@@ -19,17 +18,17 @@ namespace McExample.Cons
             {
                 Console.Clear();
                 Console.WriteLine("**********Creer un produit**********");
-                Console.Write("Entrer la référence du produit\t:");
+                Console.Write("Entrer la référence du produit\t: ");
                 string reference = Console.ReadLine();
-                Console.Write("Entrer le nom du produit\t:");
+                Console.Write("Entrer le nom du produit\t: ");
                 string name = Console.ReadLine();
-                Console.Write("Entrer le prix unitaire\t:");
+                Console.Write("Entrer le prix unitaire\t: ");
                 double price = double.Parse(Console.ReadLine());
-                Console.Write("Entrer la TVA\t");
+                Console.Write("Entrer la TVA\t: ");
                 float tax = float.Parse(Console.ReadLine());
-
+              
                 Product product = new Product(reference, name, price, tax);
-                ProductBLO productBLO = new ProductBLO();
+                ProductBLO productBLO = new ProductBLO(ConfigurationManager.AppSettings["DbFolder"]);
                 productBLO.CreateProduct(product);
 
                 IEnumerable<Product> products = productBLO.GetAllProducts();
@@ -40,11 +39,10 @@ namespace McExample.Cons
 
                 Console.WriteLine("Voulez-vous créer un autre produit ?[y/n]");
                 choice = Console.ReadLine();
-
             } 
             
             while (choice.ToLower() != "n");
-            
+            Console.WriteLine("Programme terminé !!");
 
             Console.ReadKey();
 
