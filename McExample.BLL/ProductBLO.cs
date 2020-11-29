@@ -39,5 +39,10 @@ namespace McExample.BLL
         {
             return productRepo.Find(predicate);
         }
+
+        public void EditProduct(Product oldProduct, Product newProduct)
+        {
+            productRepo.Set(oldProduct, newProduct);
+        }
     }
 }

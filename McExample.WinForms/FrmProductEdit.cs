@@ -17,6 +17,7 @@ namespace McExample.WinForms
     public partial class FrmProductEdit : Form
     {
         private Action callBack;
+        private Product oldProduct;
         public FrmProductEdit()
         {
             InitializeComponent();
@@ -27,20 +28,33 @@ namespace McExample.WinForms
             this.callBack = callBack;
         }
 
+        public FrmProductEdit(Product product, Action callBack) : this(callBack)
+        {
+            this.oldProduct = product;
+            txtName.Text = product.Name;
+            txtPrice.Text = product.UnitPrice.ToString();
+            txtReference.Text = product.Reference;
+            txtTaxe.Text = product.Tax.ToString();
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             try
             {
                 checkForm();
-                Product product = new Product
+                Product newProduct = new Product
                 (
-                txtReference.Text,
+                txtReference.Text.ToUpper(),
                 txtName.Text,
                 double.Parse(txtPrice.Text),
                 float.Parse(txtTaxe.Text)
                 );
                 ProductBLO productBLO = new ProductBLO(ConfigurationManager.AppSettings["DbFolder"]);
-                productBLO.CreateProduct(product);
+
+                if (this.oldProduct == null)
+                    productBLO.CreateProduct(newProduct);
+                else
+                    productBLO.EditProduct(oldProduct, newProduct);
 
                 MessageBox.Show
                 (
@@ -52,6 +66,9 @@ namespace McExample.WinForms
 
                 if (callBack != null)
                     callBack();
+                if (oldProduct != null)
+                    Close();
+
                 txtReference.Clear();
                 txtName.Clear();
                 txtPrice.Clear();
@@ -72,11 +89,22 @@ namespace McExample.WinForms
 
             catch (DuplicateNameException ex)
             {
-                ex.WriteToFile();
+                //ex.WriteToFile();
                 MessageBox.Show
                 (
                     ex.Message,
                     "Erreur, déjà existant",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+            }
+
+            catch (KeyNotFoundException ex)
+            {
+                MessageBox.Show
+                (
+                    ex.Message,
+                    "Not found error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );
@@ -119,6 +147,11 @@ namespace McExample.WinForms
         private void FrmProductEdit_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

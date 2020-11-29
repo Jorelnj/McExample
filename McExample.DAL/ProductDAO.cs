@@ -46,6 +46,18 @@ namespace McExample.DAL
             }
         }
 
+        public void Set(Product oldProduct, Product newProduct)
+        {
+            var oldIndex = products.IndexOf(oldProduct);
+            var newIndex = products.IndexOf(newProduct);
+            if (oldIndex < 0)
+                throw new KeyNotFoundException("Le produit n'existe pas !");
+            if (newIndex >= 0 && oldIndex != newIndex)
+                throw new DuplicateNameException("La référence de ce produit existe déjà");
+            products[oldIndex] = newProduct;
+            Save();
+        }
+
         public void Add(Product product)
         {
             var index = products.IndexOf(product);
