@@ -110,5 +110,25 @@ namespace McExample.WinForms
                   }                
             }
         }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            List<ProductListPrint> items = new List<ProductListPrint>();
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                Product p = dataGridView1.Rows[i].DataBoundItem as Product;
+                items.Add
+                (
+                    new ProductListPrint
+                    (
+                        p.Reference,
+                        p.Name,
+                        p.UnitPrice
+                    )
+                );
+            }
+            Form f = new FrmPreview("ProductListRpt.rdlc", items);
+            f.Show();
+        }
     }
 }
